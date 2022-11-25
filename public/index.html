@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de gato</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="icon" type="image/png" href="./img/icono.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="div1" id="div1">
+        <h1>Gato Online</h1>
+        <img src="./img/icono.png" width="20%" style="margin: auto;">
+        <br>
+        <br>
+        <div class="input-group">
+            <label class="label">Nombre de usuario</label>
+            <input autocomplete="off" name="username" id="username" class="input" type="text">
+        </div>
+        <br>
+        <br>
+        <button class="button" onclick="login()">Ingresar</button>
+        <br>
+        <br>
+        <br>
+        <center>García Acosta Sergio Adrián y Guzmán Gutiérrez Alan Joseph</center>
+    </div>
+    <div class="div2" id="div2">
+        <div class="col" id="cpar">
+            <br>
+            <br>
+            <div class="input-group">
+                <label class="label" style="font-size:24px">Unirse a partida</label>
+                <input autocomplete="off" name="partida" id="partida" class="input" type="text">
+            </div>
+            <br>
+            <button class="button" onclick="uniserpartida()">Jugar</button>
+            <br>
+            <br>
+            <button class="button" onclick="CrearPartida()">Crear Partida</button>
+            <br>
+            <br>
+            <button class="button" style="background-color: red;margin-top:15%; color: white; border: 1px solid red" onclick="window.location.reload();">Salir</button>
+            <br>
+            <br>
+        </div>
+        <div class="col" id="esperando" style="display: none;">
+            <p id="idpart" style="font-size: 20px"></p>
+            <img src="./img/img5.png" width="70%">
+            <br>
+            <button class="button" style="background-color: red;margin-top:10%; color: white; border: 1px solid red" onclick="window.location.reload();">Salir</button>
+            <br>
+        </div>
+        <div class="col" id="divpartida" style="display: none;">
+            <p id="nombresjug" style="font-size: 25px">juan vs pepe</p>
+            <p style="font-size: 25px;" id="nomtipo">Gato chiquito</p>
+            <div class="table">
+                <button id="g1" onclick="jugada(1)"></button>
+                <button id="g2" onclick="jugada(2)"></button>
+                <button id="g3" onclick="jugada(3)"></button>
+                <button id="g4" onclick="jugada(4)"></button>
+                <button id="g5" onclick="jugada(5)"></button>
+                <button id="g6" onclick="jugada(6)"></button>
+                <button id="g7" onclick="jugada(7)"></button>
+                <button id="g8" onclick="jugada(8)"></button>
+                <button id="g9" onclick="jugada(9)"></button>
+            </div>
+            <br>
+            <br>
+        </div>
+        <div class="col" id="divreactions" style="display: none;">
+            <img src="./img/img5.png" width="60%" style="margin: auto;" id="reaction">
+            <br>
+            <button class="button" style="background-color: red;color: white; border: 1px solid red" onclick="window.location.reload();">Salir</button>
+            <br>
+            <br>
+        </div>
+        <div class="col" id="chat">
+            <main class="page__main">
+                <div class="block--background">
+                    <div class="chatbot__overview">
+                    <ul class="chatlist">
+                        
+                    </ul>
+                    </div>
+                    <div class="chatbox-area">
+                    <form action="" id="chatform" name="chatform">
+                        <textarea placeholder="Escribe un mensaje" class="chatbox" name="chatbox" resize: "none" minlength="2"></textarea>
+                        <input class="submit-button" type="submit" value="Enviar">
+                    </form>
+                    </div>
+                    <div class="block--background"></div>
+                    <br>
+                </div>
+            </main> 
+        </div>
+        
+    </div>
+
+    <style>
+        
+        /* https://meyerweb.com/eric/tools/css/reset/
+           v2.0 | 20110126
+           License: none (public domain)
+        */
+        @import url("https://fonts.googleapis.com/css?family=Montserrat|Roboto");
+        html, body, div, span, applet, object, iframe,
+        h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+        a, abbr, acronym, address, big, cite, code,
+        del, dfn, em, img, ins, kbd, q, s, samp,
+        small, strike, strong, sub, sup, tt, var,
+        b, u, i, center,
+        dl, dt, dd, ol, ul, li,
+        fieldset, form, label, legend,
+        table, caption, tbody, tfoot, thead, tr, th, td,
+        article, aside, canvas, details, embed,
+        figure, figcaption, footer, header, hgroup,
+        menu, nav, output, ruby, section, summary,
+        time, mark, audio, video {
+          margin: 0;
+          padding: 0;
+          border: 0;
+          font-size: 100%;
+          font: inherit;
+          vertical-align: baseline;
+        }
+        
+        /* HTML5 display-role reset for older browsers */
+        article, aside, details, figcaption, figure,
+        footer, header, hgroup, menu, nav, section {
+          display: block;
+        }
+        
+        ol, ul {
+          list-style: none;
+        }
+        
+        blockquote, q {
+          quotes: none;
+        }
+        
+        blockquote:before, blockquote:after,
+        q:before, q:after {
+          content: "";
+          content: none;
+        }
+        
+        table {
+          border-collapse: collapse;
+          border-spacing: 0;
+        }
+        
+        *, *:before, *:after {
+          box-sizing: border-box;
+        }
+        
+        body {
+          overflow-x: hidden;
+          font-family: "Roboto", sans-serif;
+          font-weight: 400;
+          font-size: 16px;
+          font-size: 1em;
+          -moz-osx-font-smoothing: grayscale;
+          -webkit-font-smoothing: antialiased;
+          line-height: 1.45;
+        }
+        
+        .chatbot__overview {
+          display: flex;
+          flex-flow: row nowrap;
+          align-content: space-between;
+          min-height: 60vh;
+          max-height: 60vh;
+          margin: 0 auto;
+          padding: 1em;
+          padding-bottom: 0;
+        }
+        
+        .chatlist {
+          font-family: inherit;
+          font-size: 0.7em;
+          display: flex;
+          flex-flow: column nowrap;
+          align-items: flex-end;
+          overflow-x: hidden;
+          width: 100%;
+          max-width: 35em;
+          max-height: 75vh;
+          margin: 0 auto;
+        }
+        .chatlist .userInput, .chatlist .bot__output {
+          padding: 0.85em;
+          margin: 0.5em;
+          max-width: 100%;
+          background-color: #fff;
+          border-radius: 5px;
+          border-bottom: 1px solid #777;
+          word-wrap: break-word ;
+        }
+        .chatlist .userInput {
+          text-transform: lowercase;
+          box-shadow: 2px 2px 4px #666;
+          border: 1px solid white;
+          border-top: 5px solid #ffffff;
+          opacity: 0;
+          color: white;
+          font-size: 16px;
+          background-color: transparent;
+          animation-name: animateBubble;
+          animation-duration: 400ms;
+          animation-iteration-count: 1;
+          animation-play-state: running;
+          animation-fill-mode: forwards;
+        }
+        .chatlist .bot__output {
+          align-self: flex-start;
+          box-shadow: -2px 2px 4px #666;
+          border: 1px solid white;
+          border-top: 5px solid #ffffff;
+          will-change: auto;
+          height: auto;
+          opacity: 0;
+          color: white;
+          font-size: 16px;
+          background-color: transparent;
+          animation-name: animateBubble;
+          animation-duration: 400ms;
+          animation-iteration-count: 1;
+          animation-play-state: paused;
+          animation-fill-mode: forwards;
+        }
+        .chatlist .bot__output:nth-child(1) {
+          animation-delay: 100ms;
+          animation-play-state: running;
+        }
+        .chatlist .bot__output:nth-child(2) {
+          animation-delay: 100ms;
+          animation-play-state: running;
+        }
+        .chatlist .bot__output:nth-child(3) {
+          animation-delay: 100ms;
+          animation-play-state: running;
+        }
+        .chatlist .bot__output--standard:last-child {
+          display: block;
+        }
+        .chatlist .bot__output--failed {
+          display: block !important;
+        }
+        .chatlist .bot__output--second-sentence {
+          display: block;
+        }
+        .chatlist .bot__outputImage {
+          max-width: 16em;
+          height: 12em;
+        }
+        
+        @keyframes animateBubble {
+          0% {
+            transform: translateY(-20%);
+            opacity: 0;
+          }
+          100% {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+        .block--background {
+            background: rgba( 144, 19, 254, 0.5 );
+            box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+            backdrop-filter: blur( 14.5px );
+            -webkit-backdrop-filter: blur( 14.5px );
+            border-radius: 10px;
+            border: 1px solid rgba( 255, 255, 255, 0.18 );
+        }
+        
+        #chatform {
+          display: flex;
+          justify-content: center;
+          width: 80%;
+          max-width: 35em;
+          margin: 0 auto;
+          padding-top: 1em;
+          font-size: 1em;
+        }
+        @media screen and (max-width: 29em) {
+          #chatform {
+            width: 90%;
+          }
+        }
+        
+        .chatbox-area {
+          margin: 0 auto;
+          position: relative;
+          bottom: 0;
+          height: auto;
+          width: 100%;
+        }
+        
+        textarea[name=chatbox] {
+          resize: none;
+          border: 2px solid #ffffff;
+          width: 70%;
+          background-color: transparent;
+          color: #fff;
+          height: 3em;
+          margin: 0;
+          padding: 0.75em;
+          border-radius: 8px 0px 0px 8px;
+          font-family: inherit;
+          font-size: 1em;
+        }
+        textarea[name=chatbox]:focus {
+          outline: none;
+          border: 2px solid #ffffff;
+        }
+        
+        ::-webkit-input-placeholder {
+          /* WebKit, Blink, Edge */
+          color: #fff;
+        }
+        
+        :-moz-placeholder {
+          /* Mozilla Firefox 4 to 18 */
+          color: #fff;
+          opacity: 1;
+        }
+        
+        ::-moz-placeholder {
+          /* Mozilla Firefox 19+ */
+          color: #fff;
+          opacity: 1;
+        }
+        
+        input[type=submit] {
+          -webkit-appearance: none;
+          appearance: none;
+          border: 0;
+          width: 25%;
+          margin: 0;
+          background-color: transparent;
+          color: #fff;
+          border: 2px solid #ffffff;
+          border-radius: 0 8px 8px 0;
+          font-family: inherit;
+          font-size: 1em;
+          transition: 200ms all ease-in;
+        }
+        input[type=submit]:hover {
+          background-color: transparent;
+          border-color: #ffffff;
+          color: #fff;
+        }
+        
+        .input__nested-list {
+          list-style: disc;
+          list-style-position: inside;
+          padding: 0.5em;
+        }
+        .input__nested-list:first-child {
+          padding-top: 1em;
+        }
+        
+        .input__nested-link {
+          color: #03045e;
+          text-decoration: none;
+          border-bottom: 1px solid #03045e;
+        }
+        
+        ::-webkit-scrollbar {
+          width: 0.65em;
+          /* for vertical scrollbars */
+          height: 0.65em;
+          /* for horizontal scrollbars */
+        }
+        
+        ::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.1);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+          background: rgba(0, 0, 0, 0.3);
+        }
+        
+    </style>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="./js/script.js" ></script>
+</body>
+</html>
